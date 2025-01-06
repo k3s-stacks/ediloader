@@ -11,31 +11,14 @@ logging.basicConfig(
 logger = logging.getLogger(name=__name__)
 
 project_id = os.getenv("PROJECT_ID")
-secret_id = os.getenv("SECRET_ID")
-version = int(os.getenv("VERSION"))
+edinet_api_key = os.getenv("EDINET_API_KEY")
 bucket_name = os.getenv("BUCKET_NAME")
 
 secret_manager_client = secretmanager.SecretManagerServiceClient()
 storage_client = storage.Client()
 
 
-def get_edinet_api_key_from_secret_manager():
-    try:
-        response = secret_manager_client.access_secret_version(
-            request=secretmanager.AccessSecretVersionRequest(
-                mapping={
-                    "name": f"projects/{project_id}/secrets/{secret_id}/versions/{version}"
-                }
-            )
-        )
-        return response.payload.data.decode("UTF-8")
-    except GoogleAPICallError as e:
-        logger.error(f"Secret Managerからのキー取得に失敗しました: {e}")
-        raise
-
-
 def download_metadata(date: str) -> Dict:
-    edinet_api_key = get_edinet_api_key_from_secret_manager()
     url = "https://disclosure.edinet-fsa.go.jp/api/v2/documents.json"
     params = {
         "date": date,
