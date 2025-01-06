@@ -25,6 +25,8 @@ jobs:
       - name: Build
         run: |
           docker image build -t gcr.io/${{ secrets.GOOGLE_CLOUD_ID }}/ediloader:$GITHUB_SHA .
+      - name: Authentication for Google Artifact Registry
+        run: gcloud auth configure-docker
       - name: Push
         run: |
           docker image push gcr.io/${{ secrets.GOOGLE_CLOUD_ID }}/ediloader:$GITHUB_SHA
